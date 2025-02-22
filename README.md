@@ -1,0 +1,1 @@
+# nft-chip-s-de-beskeder
