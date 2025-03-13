@@ -1,40 +1,23 @@
-<!DOCTYPE html>
-<html lang="da">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dagens Besked</title>
-    <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background: linear-gradient(to right, #ff9a9e, #fad0c4);
-            font-family: Arial, sans-serif;
-            text-align: center;
-            color: #fff;
-        }
-        .container {
-            background: rgba(255, 255, 255, 0.2);
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-            max-width: 400px;
-        }
-        h1 {
-            font-size: 24px;
-        }
-        p {
-            font-size: 20px;
-            font-weight: bold;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>Dagens Besked 💖</h1>
-        <p>{{ message }}</p>
-    </div>
-</body>
-</html>
+from flask import Flask, render_template
+import openai
+import os
+
+app = Flask(__name__)
+
+# Hent API-nøgle fra miljøvariabler (husk at tilføje den i Replit Secrets)
+openai.api_key = os.getenv("OPENAI_API_KEY")
+
+@app.route('/')
+def get_message():
+    # Kalder OpenAI for at få en ny besked
+    response = openai.ChatCompletion.create(
+        model="gpt-4",  # Eller en anden model, f.eks. "gpt-3.5-turbo"
+        messages=[{"role": "system", "content": "Giv en kort, positiv besked, der kan gøre nogen glad."}]
+    )
+    message = response["choices"][0]["message"]["content"]
+
+    # Returner HTML-siden med besked
+    return render_template("index.html", message=message)  # Sender beskeden til HTML-siden
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=8080)
